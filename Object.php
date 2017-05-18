@@ -567,7 +567,7 @@ class NewFedoraObject extends AbstractFedoraObject {
       return TRUE;
     }
     else {
-      return FALSE;
+      throw new DatastreamExistsException("The datastream {$ds->id} already exists on the object {$ds->parent->id}");
     }
   }
 
@@ -834,39 +834,37 @@ class FedoraObject extends AbstractFedoraObject {
    */
   public function ingestDatastream(&$ds) {
     $this->populateDatastreams();
-    if (!isset($this->datastreams[$ds->id])) {
-      $params = array(
-        'controlGroup' => $ds->controlGroup,
-        'dsLabel' => $ds->label,
-        'versionable' => $ds->versionable,
-        'dsState' => $ds->state,
-        'formatURI' => $ds->format,
-        'checksumType' => $ds->checksumType,
-        'mimeType' => $ds->mimetype,
-        // Assume NewFedoraObjects will have a log message set.
-        'logMessage' => ($ds instanceof NewFedoraObject) ?
-          $ds->logMessage:
-          "Copied datastream from {$ds->parent->id}.",
-      );
-      $temp = tempnam(sys_get_temp_dir(), 'tuque');
-      if ($ds->controlGroup == 'E' || $ds->controlGroup == 'R' || $ds->getContent($temp) !== TRUE) {
-        $type = 'url';
-        $content = $ds->content;
-      }
-      else {
-        $type = 'file';
-        $content = $temp;
-      }
-      $dsinfo = $this->repository->api->m->addDatastream($this->id, $ds->id, $type, $content, $params);
-      unlink($temp);
-      $ds = new $this->fedoraDatastreamClass($ds->id, $this, $this->repository, $dsinfo);
-      $this->datastreams[$ds->id] = $ds;
-      $this->objectProfile['objLastModDate'] = $ds->createdDate;
-      return $ds;
+    if (isset($this->datastreams[$ds->id])) {
+      throw new DatastreamExistsException("The datastream {$ds->id} already exists on the object {$ds->parent->id}");
+    }
+    $params = array(
+      'controlGroup' => $ds->controlGroup,
+      'dsLabel' => $ds->label,
+      'versionable' => $ds->versionable,
+      'dsState' => $ds->state,
+      'formatURI' => $ds->format,
+      'checksumType' => $ds->checksumType,
+      'mimeType' => $ds->mimetype,
+      // Assume NewFedoraObjects will have a log message set.
+      'logMessage' => ($ds instanceof NewFedoraObject) ?
+        $ds->logMessage:
+        "Copied datastream from {$ds->parent->id}.",
+    );
+    $temp = tempnam(sys_get_temp_dir(), 'tuque');
+    if ($ds->controlGroup == 'E' || $ds->controlGroup == 'R' || $ds->getContent($temp) !== TRUE) {
+      $type = 'url';
+      $content = $ds->content;
     }
     else {
-      return FALSE;
+      $type = 'file';
+      $content = $temp;
     }
+    $dsinfo = $this->repository->api->m->addDatastream($this->id, $ds->id, $type, $content, $params);
+    unlink($temp);
+    $ds = new $this->fedoraDatastreamClass($ds->id, $this, $this->repository, $dsinfo);
+    $this->datastreams[$ds->id] = $ds;
+    $this->objectProfile['objLastModDate'] = $ds->createdDate;
+    return $ds;
   }
 
   /**

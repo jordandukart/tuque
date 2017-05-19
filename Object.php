@@ -552,6 +552,9 @@ class NewFedoraObject extends AbstractFedoraObject {
    * @param NewFedoraDatastream $ds
    *   the datastream to be ingested
    *
+   * @throws DatastreamExistsException If the datastream already exists on the
+   * object.
+   *
    * @return mixed
    *   FALSE if the datastream already exists; TRUE otherwise.
    */
@@ -845,10 +848,8 @@ class FedoraObject extends AbstractFedoraObject {
       'formatURI' => $ds->format,
       'checksumType' => $ds->checksumType,
       'mimeType' => $ds->mimetype,
-      // Assume NewFedoraObjects will have a log message set.
-      'logMessage' => ($ds instanceof NewFedoraObject) ?
-        $ds->logMessage:
-        "Copied datastream from {$ds->parent->id}.",
+      // Assume NewFedoraDatastreams will have a log message set.
+      'logMessage' => ($ds instanceof NewFedoraDatastream) ? $ds->logMessage : "Copied datastream from {$ds->parent->id}.",
     );
     $temp = tempnam(sys_get_temp_dir(), 'tuque');
     if ($ds->controlGroup == 'E' || $ds->controlGroup == 'R' || $ds->getContent($temp) !== TRUE) {

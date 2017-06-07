@@ -555,8 +555,8 @@ class NewFedoraObject extends AbstractFedoraObject {
    * @throws DatastreamExistsException If the datastream already exists on the
    * object.
    *
-   * @return mixed
-   *   FALSE if the datastream already exists; TRUE otherwise.
+   * @return bool
+   *   TRUE if the datastream was ingested correctly.
    */
   public function ingestDatastream(&$ds) {
     if (!isset($this->datastreams[$ds->id])) {

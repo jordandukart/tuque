@@ -38,6 +38,6 @@ before_script:
 script:
   - vendor/bin/phpunit -c tests/travis.xml tests/
 after_failure:
-  - cat /islandora_tomcat/fedora/server/logs/fedora.log
+  - cat $TRAVIS_BUILD_DIR/islandora_tomcat/fedora/server/logs/fedora.log
 notifications:
   irc: "irc.freenode.org#islandora"

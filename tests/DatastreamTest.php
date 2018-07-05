@@ -244,7 +244,117 @@ class DatastreamTest extends TestCase {
     $this->assertEquals('<testFixture></testFixture>', trim($newds->content));
   }
 
-  public function testContentXFromUrl() {
+  public function testContentXFromUrlHttpLoc() {
+    $data = <<<foo
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-0.xsd">
+  <titleInfo>
+    <title>Emergence and Dissolvence in the Self-Organization of Complex Systems</title>
+  </titleInfo>
+  <name type="personal">
+    <namePart type="family">Testa</namePart>
+    <namePart type="given">Bernard</namePart>
+    <role>
+      <roleTerm>author</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart type="family">Kier</namePart>
+    <namePart type="given">Lamont B.</namePart>
+    <role>
+      <roleTerm>author</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>text</typeOfResource>
+  <identifier type="uri">http://www.mdpi.org/entropy/papers/e2010001.pdf</identifier>
+  <relatedItem type="host">
+    <titleInfo>
+      <title>Entropy</title>
+    </titleInfo>
+    <originInfo>
+      <issuance>continuing</issuance>
+    </originInfo>
+    <part>
+      <detail type="volume">
+        <number>2</number>
+      </detail>
+      <detail type="issue">
+        <caption>no.</caption>
+        <number>1</number>
+      </detail>
+      <extent unit="pages">
+        <start>17</start>
+        <end>17</end>
+      </extent>
+      <date>2000</date>
+    </part>
+  </relatedItem>
+</mods>
+foo;
+    $this->x->setContentFromUrl('http://www.loc.gov/standards/mods/v3/modsejournal.xml');
+    $newds = new FedoraDatastream($this->testDsidX, $this->object, $this->repository);
+    $this->assertEquals($data, trim($newds->content));
+  }
+
+  /**
+   * @expectedException        RepositoryException
+   * @expectedExceptionCode 500
+   */
+  public function testContentXFromUrlHttpsLoc() {
+    $data = <<<foo
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-0.xsd">
+  <titleInfo>
+    <title>Emergence and Dissolvence in the Self-Organization of Complex Systems</title>
+  </titleInfo>
+  <name type="personal">
+    <namePart type="family">Testa</namePart>
+    <namePart type="given">Bernard</namePart>
+    <role>
+      <roleTerm>author</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart type="family">Kier</namePart>
+    <namePart type="given">Lamont B.</namePart>
+    <role>
+      <roleTerm>author</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>text</typeOfResource>
+  <identifier type="uri">http://www.mdpi.org/entropy/papers/e2010001.pdf</identifier>
+  <relatedItem type="host">
+    <titleInfo>
+      <title>Entropy</title>
+    </titleInfo>
+    <originInfo>
+      <issuance>continuing</issuance>
+    </originInfo>
+    <part>
+      <detail type="volume">
+        <number>2</number>
+      </detail>
+      <detail type="issue">
+        <caption>no.</caption>
+        <number>1</number>
+      </detail>
+      <extent unit="pages">
+        <start>17</start>
+        <end>17</end>
+      </extent>
+      <date>2000</date>
+    </part>
+  </relatedItem>
+</mods>
+foo;
+    $this->x->setContentFromUrl('https://www.loc.gov/standards/mods/v3/modsejournal.xml');
+    $newds = new FedoraDatastream($this->testDsidX, $this->object, $this->repository);
+    $this->assertEquals($data, trim($newds->content));
+  }
+
+  /**
+   * @expectedException        RepositoryException
+   * @expectedExceptionCode 500
+   */
+  public function testContentXFromUrlHttps() {
     $data = <<<foo
 <woo>
   <test>
@@ -255,6 +365,21 @@ foo;
     $this->x->setContentFromUrl(TEST_XML_URL);
     $newds = new FedoraDatastream($this->testDsidX, $this->object, $this->repository);
     $this->assertEquals($data, trim($newds->content));
+  }
+
+  public function testContentMFromHttpsUrl() {
+    $data = <<<foo
+<woo>
+  <test>
+    <xml></xml>
+  </test>
+</woo>
+foo;
+    $new_ds = $this->object->constructDatastream('fcreporocks', 'M');
+    $new_ds->content = '<om>nom</om>';
+    $this->object->ingestDatastream($new_ds);
+    $this->object[$new_ds->id]->setContentFromUrl(TEST_XML_URL);
+    $this->assertEquals($data, trim($new_ds->content));
   }
 
   public function testVersions() {
@@ -393,4 +518,5 @@ foo;
     }
 
   }
+
 }

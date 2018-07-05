@@ -34,7 +34,10 @@ env:
 before_script:
   - composer install
   - $TRAVIS_BUILD_DIR/tests/scripts/travis_setup.sh
+  - ps aux | grep java
 script:
   - vendor/bin/phpunit -c tests/travis.xml tests/
+after_failure:
+  - cat $FEDORA_HOME/server/logs/fedora.log
 notifications:
   irc: "irc.freenode.org#islandora"

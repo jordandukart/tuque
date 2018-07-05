@@ -379,4 +379,18 @@ foo;
     }
     $this->fail();
   }
+
+  public function testDatastreamVersionPropertiesExistWithDefaultValues() {
+    $new_ds = $this->object->constructDatastream('woot', 'M');
+    $new_ds->mimeType = 'text/plain';
+    $new_ds->content = 'initial version';
+    $this->object->ingestDatastream($new_ds);
+    $new_ds->content = 'version 2';
+
+    foreach ($this->object['woot'] as $ds) {
+      $this->assertEquals($ds->checksum, 'none');
+      $this->assertEquals($ds->checksumType, 'DISABLED');
+    }
+
+  }
 }

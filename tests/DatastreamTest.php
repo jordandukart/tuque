@@ -24,6 +24,8 @@ class DatastreamTest extends TestCase {
     $this->testPid = "$string1:$string2";
     $this->api->m->ingest(array('pid' => $this->testPid));
 
+    $describe = $this->api->a->describeRepository();
+    $this->fedoraVersion = isset($describe['repositoryVersion']) ? $describe['repositoryVersion'] : NULL;
     // create a DSID
     $this->testDsid = FedoraTestHelpers::randomCharString(10);
     $this->testDsidR = FedoraTestHelpers::randomCharString(10);
@@ -204,7 +206,22 @@ class DatastreamTest extends TestCase {
     $this->assertEquals(3, $newds->size);
   }
 
-  public function testContentSetUrl() {
+  public function testContentSetUrlHttp() {
+    $temp = tempnam(sys_get_temp_dir(), 'tuque');
+    $this->ds->setContentFromUrl('http://www.loc.gov/standards/mods/v3/modsejournal.xml');
+    $actual = file_get_contents('http://www.loc.gov/standards/mods/v3/modsejournal.xml');
+    $this->assertEquals($actual, $this->ds->content);
+    $this->ds->getContent($temp);
+    $this->assertEquals($actual, file_get_contents($temp));
+    unlink($temp);
+  }
+
+  public function testContentSetUrlHttps() {
+    // Get the Fedora version as there is currently a bug that needs
+    // investigation in 3.6.2 that breaks the tests otherwise.
+    if ($this->fedoraVersion === '3.6.2') {
+      $this->markTestSkipped('Is a bug in 3.6.2 that requires investigation.');
+    }
     $temp = tempnam(sys_get_temp_dir(), 'tuque');
     $this->ds->setContentFromUrl(TEST_PNG_URL);
     $actual = file_get_contents(TEST_PNG_URL);

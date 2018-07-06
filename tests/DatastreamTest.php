@@ -383,6 +383,11 @@ foo;
   }
 
   public function testContentMFromHttpsUrl() {
+    // Get the Fedora version as there is currently a bug that needs
+    // investigation in 3.6.2 that breaks the tests otherwise.
+    if ($this->fedoraVersion === '3.6.2') {
+      $this->markTestSkipped('Is a bug in 3.6.2 that requires investigation.');
+    }
     $data = <<<foo
 <woo>
   <test>

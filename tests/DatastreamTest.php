@@ -296,7 +296,7 @@ foo;
   }
 
   /**
-   * @expectedException        RepositoryException
+   * @expectedException        HttpConnectionException
    */
   public function testContentXFromUrlHttpsLoc() {
     $data = <<<foo
@@ -350,7 +350,7 @@ foo;
   }
 
   /**
-   * @expectedException        RepositoryException
+   * @expectedException        HttpConnectionException
    */
   public function testContentXFromUrlHttps() {
     $data = <<<foo

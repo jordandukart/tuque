@@ -1090,7 +1090,7 @@ class FedoraDatastreamVersion extends AbstractExistingFedoraDatastream {
   }
 
   /**
-   * @see AbstractDatastream::checksum
+   * @see AbstractDatastream::checksumType
    */
   protected function checksumTypeMagicProperty($function, $value) {
     return $this->generalReadOnly('dsChecksumType', 'DISABLED', $function, $value);

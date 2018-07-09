@@ -208,8 +208,8 @@ class DatastreamTest extends TestCase {
 
   public function testContentSetUrlHttp() {
     $temp = tempnam(sys_get_temp_dir(), 'tuque');
-    $this->ds->setContentFromUrl('http://www.loc.gov/standards/mods/v3/modsejournal.xml');
-    $actual = file_get_contents('http://www.loc.gov/standards/mods/v3/modsejournal.xml');
+    $this->ds->setContentFromUrl(LOC_HTTP_URL);
+    $actual = file_get_contents(LOC_HTTP_URL);
     $this->assertEquals($actual, $this->ds->content);
     $this->ds->getContent($temp);
     $this->assertEquals($actual, file_get_contents($temp));
@@ -262,108 +262,22 @@ class DatastreamTest extends TestCase {
   }
 
   public function testContentXFromUrlHttpLoc() {
-    $data = <<<foo
-<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-0.xsd">
-  <titleInfo>
-    <title>Emergence and Dissolvence in the Self-Organization of Complex Systems</title>
-  </titleInfo>
-  <name type="personal">
-    <namePart type="family">Testa</namePart>
-    <namePart type="given">Bernard</namePart>
-    <role>
-      <roleTerm>author</roleTerm>
-    </role>
-  </name>
-  <name type="personal">
-    <namePart type="family">Kier</namePart>
-    <namePart type="given">Lamont B.</namePart>
-    <role>
-      <roleTerm>author</roleTerm>
-    </role>
-  </name>
-  <typeOfResource>text</typeOfResource>
-  <identifier type="uri">http://www.mdpi.org/entropy/papers/e2010001.pdf</identifier>
-  <relatedItem type="host">
-    <titleInfo>
-      <title>Entropy</title>
-    </titleInfo>
-    <originInfo>
-      <issuance>continuing</issuance>
-    </originInfo>
-    <part>
-      <detail type="volume">
-        <number>2</number>
-      </detail>
-      <detail type="issue">
-        <caption>no.</caption>
-        <number>1</number>
-      </detail>
-      <extent unit="pages">
-        <start>17</start>
-        <end>17</end>
-      </extent>
-      <date>2000</date>
-    </part>
-  </relatedItem>
-</mods>
-foo;
-    $this->x->setContentFromUrl('http://www.loc.gov/standards/mods/v3/modsejournal.xml');
+    $file = getcwd() . '/tests/test_data/loc.xml';
+    $data = file_get_contents($file);
+    $this->x->setContentFromUrl(LOC_HTTP_URL);
     $newds = new FedoraDatastream($this->testDsidX, $this->object, $this->repository);
-    $this->assertEquals($data, trim($newds->content));
+    $this->assertEquals(trim($data), trim($newds->content));
   }
 
   /**
    * @expectedException        RepositoryException
    */
   public function testContentXFromUrlHttpsLoc() {
-    $data = <<<foo
-<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-0.xsd">
-  <titleInfo>
-    <title>Emergence and Dissolvence in the Self-Organization of Complex Systems</title>
-  </titleInfo>
-  <name type="personal">
-    <namePart type="family">Testa</namePart>
-    <namePart type="given">Bernard</namePart>
-    <role>
-      <roleTerm>author</roleTerm>
-    </role>
-  </name>
-  <name type="personal">
-    <namePart type="family">Kier</namePart>
-    <namePart type="given">Lamont B.</namePart>
-    <role>
-      <roleTerm>author</roleTerm>
-    </role>
-  </name>
-  <typeOfResource>text</typeOfResource>
-  <identifier type="uri">http://www.mdpi.org/entropy/papers/e2010001.pdf</identifier>
-  <relatedItem type="host">
-    <titleInfo>
-      <title>Entropy</title>
-    </titleInfo>
-    <originInfo>
-      <issuance>continuing</issuance>
-    </originInfo>
-    <part>
-      <detail type="volume">
-        <number>2</number>
-      </detail>
-      <detail type="issue">
-        <caption>no.</caption>
-        <number>1</number>
-      </detail>
-      <extent unit="pages">
-        <start>17</start>
-        <end>17</end>
-      </extent>
-      <date>2000</date>
-    </part>
-  </relatedItem>
-</mods>
-foo;
-    $this->x->setContentFromUrl('https://www.loc.gov/standards/mods/v3/modsejournal.xml');
+    $file = getcwd() . '/tests/test_data/loc.xml';
+    $data = file_get_contents($file);
+    $this->x->setContentFromUrl(LOC_HTTPS_URL);
     $newds = new FedoraDatastream($this->testDsidX, $this->object, $this->repository);
-    $this->assertEquals($data, trim($newds->content));
+    $this->assertEquals(trim($data), trim($newds->content));
   }
 
   /**
